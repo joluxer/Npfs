@@ -38,4 +38,7 @@ Npfs is published under a double license at your option: zlib license or GPLv3 w
   the base class for `RemovableResource`, `RemovableDirectory`
 * nice to have: Auth, but it might be insecure, because fid/afid spoofing might get around this,
   would prefer to encapsulate the TCP stream into TLS
+* rework of file and directory resources in a way that static logical structures may be compiled 
+  as const/constexpr into r/o memory (Flash)
+
  
