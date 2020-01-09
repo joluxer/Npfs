@@ -1,0 +1,38 @@
+
+
+README
+
+ Created on: 27.02.2013
+     Author: jlode
+
+Dieses Verzeichnis enthält das Plattform-unabhängige 9P2000-Server-Framework in C++-Fomulierung zum
+Ressourcen-Sharing. Die Grundidee des 9P2000-Ressourcen-Sharings sind Remote-Memory-Zugriffe in 
+serialisierter Form. 
+
+Das gesamte NPFS-Framework ist in einem C++-Namespace Npfs untergebracht.
+
+Grundstruktur des NPFS-Frameworks ist:
+o ein Server-Objekt (Server.h), das durch einen Scheduling-Mechanismus angetrieben wird (Server::operate(), Server::scheduleTx())
+o verschiedene I/O-Verbindungen, die das Connection-Interface (Connection.h), welches der Server benötigt, implementieren,
+o Server-Namespaces (ServerNamespace.h), welche die bereitzustellenden Resourcen (Verzeichnis-Bäume, Directory.h, Resource.h)
+  enthalten. Alle Ressourcen müssen das Resource-Interface (Resource.h) implementieren. 
+
+Es existiert eine Beispiel-Implementation für eine Connection über ByteStreams. 
+
+Es existieren verschiedene Basis-Implementationen für einfache Ressourcen, wie z.B.
+o Server-Namespaces: Dateibäume, vergleichbar mit Windows-Network-Shares, die je einen eigenen Verzeichnisbaum
+  darstellen.
+o Directories
+o eine einfache Nutzerverwaltung, die auch als R/O-Files im Dateibaum (traditionell unter /adm) gemounted werden kann
+o Speicherbereiche (RamFile)
+o C++-Variablen (VariableFile), für einige Grundtypen (uint8, uint16, uint32) existieren auch bereits
+  Serialisierer/Deserialisierer in ASCII-Hex- und ASCII-Dezimal-Darstellung
+o ByteStreams (sequentielle Datenströme, die nicht gepuffert sind, z.B. UART-Datenströme), blockierend und nicht blockierend
+o C++ Bool-Variablen mit String-Repräsentation des Wertes
+o IoPins mit String-Repräsentation des Pin-Zustands
+
+Credits und Lizenz
+==================
+
+Das NpfsCpp-Paket wurde zu C++ inspiriert vom spfs-Paket, welches unter http://sourceforge.net/projects/npfs/ verfügbar ist.
+
