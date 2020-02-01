@@ -32,12 +32,15 @@ protected:
  * (i.a. enum und andere Basis-Typen) in einen Text bzw. binären Datenstrom.
  * Sie deserialisiert den Datenstrom zu int und konvertiert diesen Wert dann zum
  * Ziel-Datentyp.
+ *
+ * Für identische Variablen-Typen können trotzdem unterschiedliche Texte implementiert werden, wenn
+ * unterschiedliche VariantId's vergeben werden.
  */
-template<typename T>
+template<typename VT, unsigned VariantId = 0>
 class BinaryStringSerDes: public BinaryStringSerDesBase
 {
 public:
-  typedef T VarType;
+  typedef VT VarType;
   typedef std::pair<int, const NpStr *const> ValuePair;
 
   BinaryStringSerDes(VarType& myVar)
