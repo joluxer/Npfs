@@ -22,7 +22,7 @@ protected:
 //  BinaryStringSerDesBase();
 //  virtual ~BinaryStringSerDes();
 
-  void serializeFromInt(int val, const std::pair<int, const NpStr *const>* array, const NpStr& UnknownValue, unsigned char* buffer, unsigned bufferLength);
+  unsigned serializeFromInt(int val, const std::pair<int, const NpStr *const>* array, const NpStr& UnknownValue, unsigned char* buffer, unsigned bufferLength);
   int deserializeToInt(const std::pair<int, const NpStr *const>* array, int DefaultValue, const unsigned char* buffer, unsigned bufferLength);
 };
 
@@ -35,6 +35,12 @@ protected:
  *
  * Für identische Variablen-Typen können trotzdem unterschiedliche Texte implementiert werden, wenn
  * unterschiedliche VariantId's vergeben werden.
+ *
+ * One can use a macro like this for creating the command string objects
+ * #define NpstrOf(STR) const char STR##String[] = #STR; \
+ *   Npfs::NpStr Npstr##STR{STR##String, sizeof(STR##String) - 1}
+ * together with const char arrays (string) in an anonymous namespace. This results per line in an NpStr constant of the name NpstrSTR
+ *
  */
 template<typename VT, unsigned VariantId = 0>
 class BinaryStringSerDes: public BinaryStringSerDesBase
@@ -55,9 +61,9 @@ public:
   static const NpStr& UnknownValue;    // Dieser Wert muss vom  Verwender des Klassen-Templates erstellt werden, er wird immer dann ausgegeben, wenn im Value[]-Array kein Wert gefunden wurde.
   static const int DefaultValue;  // Dieser Wert muss vom  Verwender des Klassen-Templates erstellt werden, er wird immer dann eingelesen, wenn im Value[]-Array kein NpStr gefunden wurde.
 
-  void serializeTo(unsigned char* buffer, unsigned bufferLength)
+  unsigned serializeTo(unsigned char* buffer, unsigned bufferLength)
   {
-    serializeFromInt(int(variable), Values, UnknownValue, buffer, bufferLength > DataLength_bytes ? DataLength_bytes : bufferLength);
+    return serializeFromInt(int(variable), Values, UnknownValue, buffer, bufferLength > DataLength_bytes ? DataLength_bytes : bufferLength);
   }
 
   bool deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

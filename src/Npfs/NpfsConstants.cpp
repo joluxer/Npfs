@@ -31,7 +31,16 @@ namespace Npfs
  const char ErrorString::Eblocked[] = "Resource temporarily unavailable";
  const char ErrorString::InternalServerError[] = "Internal server error";
  const char ErrorString::Eio[] = "i/o error";
-
+ const char ErrorString::Erange[] = "Numerical result out of range";
+ const char ErrorString::Eremoteio[] = "Remote I/O error";
+ const char ErrorString::Etimedout[] = "Connection timed out";
+ const char ErrorString::Ehostunreach[] = "No route to host";
+ const char ErrorString::Enetunreach[] = "Network is unreachable";
+ const char ErrorString::Ecomm[] = "Communication error on send";
+ const char ErrorString::Eproto[] = "Protocol error";
+ const char ErrorString::Enobufs[] = "No buffer space available";
+ const char ErrorString::Econnaborted[] = "Software caused connection abort";
+ const char ErrorString::Ebusy[] = "Device or resource busy";
 
 }  // namespace Npfs
 

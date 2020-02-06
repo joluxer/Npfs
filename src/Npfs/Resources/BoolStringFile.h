@@ -82,8 +82,8 @@ public:
    * @param commandPrefix
    */
   void setStrings(const Strings& strings);
-  void setUpdateHandler(const Callback<bool, bool&>* handler); ///< the given handler will be executed on opening the file, until it returns true
-  void setChangeHandler(const Callback<bool, bool&>* handler); ///< the given handler will be executed once on closing the file
+  void setUpdateHandler(const Callback<bool, bool&, const char*&>* handler); ///< the given handler will be executed on opening the file, until it returns true, second arg is returned error msg, if not nullptr
+  void setChangeHandler(const Callback<bool, bool&, const char*&>* handler); ///< the given handler will be executed on closing the file, until it returns true, second arg is returned error msg, if not nullptr
 
   virtual
   ResultMessage open(Npfs::OpenIoState& workRef, uint8_t mode, uint32_t& iounit);
@@ -108,8 +108,8 @@ protected:
   bool& variable;
   const Strings* string;
 
-  const Callback<bool, bool&>* updateHandler;
-  const Callback<bool, bool&>* changeHandler;
+  const Callback<bool, bool&, const char*&>* updateHandler;
+  const Callback<bool, bool&, const char*&>* changeHandler;
 
   struct IoBuffer: public Npfs::IoState
   {
@@ -141,13 +141,13 @@ void BoolStringFile::setStrings(const Strings& strings)
 }
 
 inline
-void BoolStringFile::setUpdateHandler(const Callback<bool, bool&>* handler)
+void BoolStringFile::setUpdateHandler(const Callback<bool, bool&, const char*&>* handler)
 {
   updateHandler = handler;
 }
 
 inline
-void BoolStringFile::setChangeHandler(const Callback<bool, bool&>* handler)
+void BoolStringFile::setChangeHandler(const Callback<bool, bool&, const char*&>* handler)
 {
   changeHandler = handler;
 }

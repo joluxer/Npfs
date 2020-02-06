@@ -24,7 +24,7 @@ namespace Npfs
 //  // Auto-generated destructor stub
 //}
 
-void BinaryStringSerDesBase::serializeFromInt(int val, const std::pair<int, const NpStr *const>* array, const NpStr& UnknownValue, unsigned char* buffer, unsigned bufferLength)
+unsigned BinaryStringSerDesBase::serializeFromInt(int val, const std::pair<int, const NpStr *const>* array, const NpStr& UnknownValue, unsigned char* buffer, unsigned bufferLength)
 {
   while (array->second)
   {
@@ -51,6 +51,8 @@ void BinaryStringSerDesBase::serializeFromInt(int val, const std::pair<int, cons
     memset(buffer + count + 1, ' ', bufferLength - count - 2);
     buffer[bufferLength - 1] = '\n';
   }
+
+  return bufferLength;
 }
 
 int BinaryStringSerDesBase::deserializeToInt(const std::pair<int, const NpStr *const>* array, int DefaultValue, const unsigned char* buffer, unsigned bufferLength)

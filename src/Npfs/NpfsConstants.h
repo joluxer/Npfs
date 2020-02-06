@@ -103,6 +103,16 @@ struct ErrorString
   static const char Eblocked[];
   static const char InternalServerError[];
   static const char Eio[];
+  static const char Erange[];
+  static const char Eremoteio[];
+  static const char Etimedout[];
+  static const char Ehostunreach[];
+  static const char Enetunreach[];
+  static const char Ecomm[];
+  static const char Eproto[];
+  static const char Enobufs[];
+  static const char Econnaborted[];
+  static const char Ebusy[];
 };
 
 static const int DefaultTcpPortNumber = 564;

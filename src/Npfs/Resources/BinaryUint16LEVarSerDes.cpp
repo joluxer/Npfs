@@ -17,12 +17,14 @@ BinaryUint16LEVarSerDes::BinaryUint16LEVarSerDes(uint16_t& myVar)
 : variable(myVar)
 {}
 
-void BinaryUint16LEVarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned BinaryUint16LEVarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
 
   buffer[0] = variable >> 0;
   buffer[1] = variable >> 8;
+
+  return 2;
 }
 
 bool BinaryUint16LEVarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

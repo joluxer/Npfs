@@ -38,6 +38,9 @@ Fcall::~Fcall()
     if ((typeof(rMessage))~0 != rMessage)
       delete rMessage;
   }
+
+  if (op)
+    delete op;
 }
 
 void Fcall::createError(const Tmessage* tMessage, const char* errMessage)

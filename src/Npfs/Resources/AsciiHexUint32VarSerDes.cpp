@@ -18,7 +18,7 @@ AsciiHexUint32VarSerDes::AsciiHexUint32VarSerDes(uint32_t &myVar)
 : variable(myVar)
 {}
 
-void AsciiHexUint32VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiHexUint32VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   unsigned i;
   unsigned shift;
@@ -38,6 +38,8 @@ void AsciiHexUint32VarSerDes::serializeTo(unsigned char* buffer, unsigned buffer
       buffer[i + 1] += 'a' - '9' - 1;
   }
   buffer[i] = '\n';
+
+  return ++i;
 }
 
 bool AsciiHexUint32VarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

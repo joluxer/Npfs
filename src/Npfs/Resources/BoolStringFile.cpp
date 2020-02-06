@@ -48,28 +48,34 @@ BoolStringFile::BoolStringFile(const char* filename, Npfs::Directory* parent, bo
 BoolStringFile::ResultMessage BoolStringFile::open(Npfs::OpenIoState& workRef, uint8_t mode, uint32_t& iounit)
 {
   ResultMessage result = 0;
+  ResultMessage updateError = 0;
   assert(0 != mm);
 
-  if (!updateHandler || updateHandler->execute(variable))
+  if (!updateHandler || updateHandler->execute(variable, updateError))
   {
-    IoBuffer* ioRef = new(mm) IoBuffer;
-
-    if (!handleNoMemory(ioRef, result))
+    if (not updateError)
     {
-      workRef.ioState = ioRef;
-      ioRef->readValue = variable ? string->trueString : string->falseString;
-      ioRef->readOffset = 0;
-      ioRef->writeOffset = 0;
-      ioRef->flag.isWritten = false;
-      ioRef->flag.writeFalseOk = true;
-      ioRef->flag.writeTrueOk = true;
+      IoBuffer* ioRef = new(mm) IoBuffer;
 
-      result = OpSuccess;
+      if (!handleNoMemory(ioRef, result))
+      {
+        workRef.ioState = ioRef;
+        ioRef->readValue = variable ? string->trueString : string->falseString;
+        ioRef->readOffset = 0;
+        ioRef->writeOffset = 0;
+        ioRef->flag.isWritten = false;
+        ioRef->flag.writeFalseOk = true;
+        ioRef->flag.writeTrueOk = true;
+
+        result = OpSuccess;
+      }
+      else
+      {
+        result = NoMemory;
+      }
     }
     else
-    {
-      result = NoMemory;
-    }
+      result = updateError;
   }
 
   return result;
@@ -205,6 +211,8 @@ void BoolStringFile::flush(Npfs::OpenIoState& workRef)   ///< cancels the refere
 
 BoolStringFile::ResultMessage BoolStringFile::close(Npfs::OpenIoState& workRef)
 {
+  ResultMessage result = 0;
+
   IoBuffer* ioRef = static_cast<IoBuffer*>(workRef.ioState);
 
   if (ioRef->flag.isWritten)
@@ -212,18 +220,32 @@ BoolStringFile::ResultMessage BoolStringFile::close(Npfs::OpenIoState& workRef)
     // nur Variable setzen, wenn exact einer der beiden Strings gesendet wurde, sonst die Operation verwerfen
     if (ioRef->flag.writeFalseOk xor ioRef->flag.writeTrueOk)
     {
-      variable = ioRef->flag.writeTrueOk; // nachdem die beiden Flags eine exacte Invertierung von einander sind, enthält das true-Flag den neuen Wert
+      variable = ioRef->flag.writeTrueOk; // nachdem die beiden Flags eine exakte Invertierung von einander sind, enthält das true-Flag den neuen Wert
 
       if (changeHandler)
-        changeHandler->notify(variable);
+      {
+        ResultMessage changeError = 0;
+        if (changeHandler->notify(variable, changeError))
+        {
+          if (not changeError)
+            result = OpSuccess;
+          else
+            result = changeError;
+
+          delete ioRef;
+          workRef.ioState = ioRef = 0;
+        }
+      }
     }
   }
+  else
+  {
+    result = OpSuccess;
+    delete ioRef;
+    workRef.ioState = ioRef = 0;
+  }
 
-  delete ioRef;
-
-  workRef.ioState = ioRef = 0;
-
-  return OpSuccess;
+  return result;
 }
 
 BoolStringFile::ResultMessage BoolStringFile::trunc(Npfs::BlockingOpState* &opRef, uint64_t newLength)

@@ -20,14 +20,19 @@ AsciiDecimalUint16VarSerDes::AsciiDecimalUint16VarSerDes(uint16_t& myVar)
 : variable(myVar)
 {}
 
-void AsciiDecimalUint16VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiDecimalUint16VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
 
   StringBufferStream stringBuffer(buffer, bufferLength);
   PrintfToStream fString(stringBuffer);
 
-  fString.printf("%5u\n", variable);
+  auto n = fString.printf("%5u\n", variable);
+
+  if (n > int(bufferLength))
+    n = bufferLength;
+
+  return n;
 }
 
 bool AsciiDecimalUint16VarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

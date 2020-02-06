@@ -20,14 +20,19 @@ AsciiDecimalInt8VarSerDes::AsciiDecimalInt8VarSerDes(VarType& myVar)
 : variable(myVar)
 {}
 
-void AsciiDecimalInt8VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiDecimalInt8VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
 
   StringBufferStream stringBuffer(buffer, bufferLength);
   PrintfToStream fString(stringBuffer);
 
-  fString.printf("%4d\n", variable);
+  auto n = fString.printf("%4d\n", variable);
+
+  if (n > int(bufferLength))
+    n = bufferLength;
+
+  return n;
 }
 
 bool AsciiDecimalInt8VarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

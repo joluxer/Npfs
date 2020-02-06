@@ -8,7 +8,7 @@
 #ifndef VARIABLEFILE_H_
 #define VARIABLEFILE_H_
 
-#include "../Npfs/Resources/Resource.h"
+#include "Resource.h"
 #include "Callback.h"
 #include "MemoryManager.h"
 
