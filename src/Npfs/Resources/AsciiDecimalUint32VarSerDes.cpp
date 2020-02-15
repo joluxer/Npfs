@@ -20,14 +20,19 @@ AsciiDecimalUint32VarSerDes::AsciiDecimalUint32VarSerDes(uint32_t& myVar)
 : variable(myVar)
 {}
 
-void AsciiDecimalUint32VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiDecimalUint32VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
 
   StringBufferStream stringBuffer(buffer, bufferLength);
   PrintfToStream fString(stringBuffer);
 
-  fString.printf("%10u\n", variable);
+  auto n = fString.printf("%10u\n", variable);
+
+  if (n > int(bufferLength))
+    n = bufferLength;
+
+  return n;
 }
 
 bool AsciiDecimalUint32VarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

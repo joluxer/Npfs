@@ -17,7 +17,7 @@ AsciiHexUint8VarSerDes::AsciiHexUint8VarSerDes(uint8_t& myVar)
 : variable(myVar)
 {}
 
-void AsciiHexUint8VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiHexUint8VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
 
@@ -31,6 +31,8 @@ void AsciiHexUint8VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferL
   if ('9' < buffer[3])
     buffer[3] += 'a' - '9' - 1;
   buffer[4] = '\n';
+
+  return 5;
 }
 
 bool AsciiHexUint8VarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

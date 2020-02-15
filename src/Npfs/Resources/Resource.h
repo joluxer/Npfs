@@ -73,7 +73,7 @@ public:
   virtual
   ResultMessage close(Npfs::OpenIoState& workRef);  // the default implementation just deletes ioState and returns, will be called only, if workRef.ioState is not zero
   virtual
-  ResultMessage remove(Npfs::BlockingOpState* &opRef, const Npfs::NpUser& user); // the resource is asked to remove itself, which in turn must ask its parent to remove the entry...; the default implementation refuses the action
+  ResultMessage remove(Npfs::BlockingOpState* &opRef, const Npfs::NpUser& user); // the resource is asked to remove itself after it is umounted from paren (after call to umountForRemove() ); the default implementation refuses the action
   virtual
   const NpStat& getStat();
   virtual

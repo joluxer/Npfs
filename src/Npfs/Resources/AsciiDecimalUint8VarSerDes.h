@@ -23,6 +23,7 @@ class AsciiDecimalUint8VarSerDes
 {
 public:
   typedef uint8_t VarType;
+  typedef uint8_t VarConstructionType;
 
   AsciiDecimalUint8VarSerDes(VarType& myVar);
 
@@ -30,7 +31,7 @@ public:
   static const bool canDeserialize = true;
   static const uint64_t DataLength_bytes = 4;
 
-  void serializeTo(unsigned char* buffer, unsigned bufferLength);
+  unsigned serializeTo(unsigned char* buffer, unsigned bufferLength);
 
   bool deserializeFrom(const unsigned char* buffer, unsigned bufferLength);
 

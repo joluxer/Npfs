@@ -38,6 +38,9 @@ Fcall::~Fcall()
     if ((typeof(rMessage))~0 != rMessage)
       delete rMessage;
   }
+
+  if (op) // normally the resource implementation shall cleanup these pointers, so this is a last resort, which might go wrong, as this is not nessessarily deletable
+    delete op;
 }
 
 void Fcall::createError(const Tmessage* tMessage, const char* errMessage)

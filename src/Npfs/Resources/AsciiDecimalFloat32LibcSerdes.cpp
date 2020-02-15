@@ -15,7 +15,7 @@ namespace Npfs
 {
 
 AsciiDecimalFloat32LibcSerdes::AsciiDecimalFloat32LibcSerdes(VarType& myVar)
-: variable(myVar)
+: variable(myVar), precision(6), format("%*.*g\n")
 {}
 
 //AsciiDecimalFloat32LibcSerdes::~AsciiDecimalFloat32LibcSerdes()
@@ -23,11 +23,16 @@ AsciiDecimalFloat32LibcSerdes::AsciiDecimalFloat32LibcSerdes(VarType& myVar)
 //  // Auto-generated destructor stub
 //}
 
-void AsciiDecimalFloat32LibcSerdes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiDecimalFloat32LibcSerdes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
 
-  snprintf(reinterpret_cast<char*>(buffer), bufferLength, "%*.*g\n", int(DataLength_bytes - 1), int(DataLength_bytes - 6), variable);
+  auto n = snprintf(reinterpret_cast<char*>(buffer), bufferLength, format, int(DataLength_bytes - 2), precision, variable);
+
+  if (n > int(bufferLength))
+    n = bufferLength;
+
+  return n;
 }
 
 bool AsciiDecimalFloat32LibcSerdes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

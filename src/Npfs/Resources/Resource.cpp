@@ -19,7 +19,7 @@ namespace Npfs
 {
 
 const Resource::ResultMessage Resource::OpSuccess = "operation successful";
-const Resource::ResultMessage Resource::NoMemory = "Cannot allocate memory";
+const Resource::ResultMessage Resource::NoMemory = ErrorString::Enomem;
 
 Resource::Resource(const char* name, Directory* _parent, uint8_t type, uint16_t umask)
 : parent(_parent), sibling(0), locked(0), accessRefCount(0)

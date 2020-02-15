@@ -17,7 +17,7 @@ AsciiHexUint16VarSerDes::AsciiHexUint16VarSerDes(uint16_t& myVar)
 : variable(myVar)
 {}
 
-void AsciiHexUint16VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
+unsigned AsciiHexUint16VarSerDes::serializeTo(unsigned char* buffer, unsigned bufferLength)
 {
   assert(bufferLength >= DataLength_bytes);
   unsigned i;
@@ -39,6 +39,8 @@ void AsciiHexUint16VarSerDes::serializeTo(unsigned char* buffer, unsigned buffer
     buffer[i] += 'A' - '9' - 1;
 
   buffer[++i] = '\n';
+
+  return ++i;
 }
 
 bool AsciiHexUint16VarSerDes::deserializeFrom(const unsigned char* buffer, unsigned bufferLength)

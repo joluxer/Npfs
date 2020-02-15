@@ -21,6 +21,9 @@ Fid::~Fid()
   int hash;
   Fid **htable, *f, **prevp;
 
+  if (ioRef)  // normally the resource implementation shall cleanup these pointers, so this is a last resort, which might go wrong, as this is not nessessarily deletable
+    delete ioRef;
+
   hash = fid % LookupTableSize;
   htable = pool;
   if (htable)

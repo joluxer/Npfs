@@ -212,4 +212,17 @@ Npfs::Resource::ResultMessage VariableFile<SerDes>::trunc(Npfs::BlockingOpState*
   return result;
 }
 
+template<class SerDes>
+VariableFile<SerDes>::IoBuffer::IoBuffer()
+{
+  ioBuffer = reinterpret_cast<unsigned char*>(npfsNew(SerDes::DataLength_bytes + 1, mm));
+}
+
+template<class SerDes>
+VariableFile<SerDes>::IoBuffer::~IoBuffer()
+{
+  if (ioBuffer)
+    npfsDelete(ioBuffer);
+}
+
 }

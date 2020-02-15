@@ -8,7 +8,7 @@
 #ifndef VARIABLEFILE_H_
 #define VARIABLEFILE_H_
 
-#include "../Npfs/Resources/Resource.h"
+#include "Resource.h"
 #include "Callback.h"
 #include "MemoryManager.h"
 
@@ -95,7 +95,9 @@ protected:
 
   struct IoBuffer: public Npfs::IoState
   {
-    unsigned char ioBuffer[SerDes::DataLength_bytes + 1];
+    IoBuffer();
+    ~IoBuffer();
+    unsigned char *ioBuffer;
     unsigned bufferFill;
     struct _Flags
     {
