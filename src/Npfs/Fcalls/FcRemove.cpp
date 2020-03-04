@@ -49,7 +49,7 @@ PT_THREAD(FcRemove::engine())
   {
     PT_WAIT_WHILE(pt, runClunk());
 
-    fid->dirEntry->unlock();
+    fid->dirEntry->unlockFrom(fid);
 
     if (fid->dirEntry->isMounted())
     {
@@ -90,6 +90,7 @@ bool FcRemove::runClunk()
 
   if (result != 0)
   {
+    fid->dirEntry->unlockFrom(fid);
     running = false;
     if ((Resource::OpSuccess != result) && !handleNoMemResult(result))
     {

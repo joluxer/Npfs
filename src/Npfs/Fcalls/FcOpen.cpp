@@ -63,18 +63,21 @@ PT_THREAD(FcOpen::engine())
 
   if ((((tMsg->mode & 3) == Oread) || ((tMsg->mode & 3) == Ordwr)) && !fid->dirEntry->isReadableBy(*fid->user))
   {
+    fid->dirEntry->unlockFrom(fid);
     createError(tMsg, ErrorString::Eperm);
     PT_EXIT(pt);
   }
 
   if ((((tMsg->mode & 3) == Owrite) || ((tMsg->mode & 3) == Ordwr)) && !fid->dirEntry->isWritableBy(*fid->user))
   {
+    fid->dirEntry->unlockFrom(fid);
     createError(tMsg, ErrorString::Eperm);
     PT_EXIT(pt);
   }
 
   if (((tMsg->mode & 3) == Oexec) && !fid->dirEntry->isExecutableBy(*fid->user))
   {
+    fid->dirEntry->unlockFrom(fid);
     createError(tMsg, ErrorString::Eperm);
     PT_EXIT(pt);
   }
@@ -89,6 +92,7 @@ PT_THREAD(FcOpen::engine())
 
         if (result && (Resource::OpSuccess != result) && !handleNoMemResult(result))
         {
+          fid->dirEntry->unlockFrom(fid);
           createError(tMsg, result);
           PT_EXIT(pt);
         }
@@ -100,6 +104,7 @@ PT_THREAD(FcOpen::engine())
     }
     else
     {
+      fid->dirEntry->unlockFrom(fid);
       createError(tMsg, ErrorString::Eperm);
       PT_EXIT(pt);
     }
@@ -107,12 +112,14 @@ PT_THREAD(FcOpen::engine())
 
   if ((tMsg->mode & Orclose) && !fid->directory->isWritableBy(*fid->user))
   {
+    fid->dirEntry->unlockFrom(fid);
     createError(tMsg, ErrorString::Eperm);
     PT_EXIT(pt);
   }
 
   if ((fid->dirEntry->isDir()) && (tMsg->mode != Oread))
   {
+    fid->dirEntry->unlockFrom(fid);
     createError(tMsg, ErrorString::Eperm);
     PT_EXIT(pt);
   }
@@ -146,6 +153,7 @@ bool FcOpen::runOp()
 
   if (result && (Resource::OpSuccess != result) && !handleNoMemResult(result))
   {
+    fid->dirEntry->unlockFrom(fid);
     createError(tMsg, result);
   }
   else if (result == Resource::OpSuccess)

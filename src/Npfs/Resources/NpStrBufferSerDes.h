@@ -101,6 +101,8 @@ bool NpStrBufferPtrSerDes<StringLength, CanSerialize, CanDeserialize>::deseriali
       count = variable.bufferSpace;
 
     memcpy(variable.str, buffer, count);
+    variable.len = count;
+    success = true;
   }
   else
   {
@@ -109,6 +111,7 @@ bool NpStrBufferPtrSerDes<StringLength, CanSerialize, CanDeserialize>::deseriali
     variable.str = const_cast<char*>(reinterpret_cast<const char*>(buffer));
     variable.len = bufferLength;
     variable.bufferSpace = DataLength_bytes;
+    success = true;
   }
 
   return success;

@@ -298,4 +298,38 @@ private:
 
 };
 
+template<class Class, typename ReturnType, typename VarType, typename ...Parameters>
+class CalleeMemberWithVar: public Callback<ReturnType, Parameters...>
+{
+
+public:
+  typedef ReturnType
+  (Class::*MemberFunctionPtr)(VarType, Parameters...);
+
+  CalleeMemberWithVar(Class* _class_instance, VarType p, MemberFunctionPtr _method)
+  : callee(_class_instance), param(p), memberFunction(_method)
+  {}
+
+  ReturnType send(Parameters... args) const
+  {
+    return (callee->*memberFunction)(param, args...);
+  }
+
+  ReturnType execute(Parameters... args) const
+  {
+    return send(args...);
+  }
+
+  ReturnType notify(Parameters... args) const
+  {
+    return send(args...);
+  }
+
+private:
+  Class * const callee;
+  VarType param;
+  const MemberFunctionPtr memberFunction;
+
+};
+
 #endif /* CALLBACK_H_ */

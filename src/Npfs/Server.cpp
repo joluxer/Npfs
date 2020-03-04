@@ -27,7 +27,8 @@ namespace Npfs
 {
 
 Server::Server(MemoryManager* memman)
-: mm(memman), connections(0), orphanedFid(0), srvNamespaces(0)
+: mm(memman), connections(0), orphanedFid(0), orphanCleanupState(0),
+  srvNamespaces(0)
 {
   orphanedFidPool = Fid::createPool(mm);
 }
@@ -107,6 +108,7 @@ void Server::disconnect(Connection& conn)
         {
           OpenIoState s(fc->fid->ioRef,fc->op);
           fc->fid->dirEntry->flush(s);
+          fc->fid->dirEntry->unlockFrom(fc->fid);
         }
 
         next = fc->next;
@@ -248,6 +250,7 @@ bool Server::processWorkQueues()
       OpenIoState s(orphanedFid->ioRef, orphanCleanupState);
       if (0 != orphanedFid->dirEntry->close(s))
       {
+        orphanedFid->dirEntry->unlockFrom(orphanedFid);
         delete orphanedFid;
         orphanedFid = 0;
       }

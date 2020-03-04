@@ -12,6 +12,7 @@
 #include "Callback.h"
 
 #include <string.h>
+#include <array>
 
 namespace Npfs
 {
@@ -58,23 +59,31 @@ public:
 template<unsigned BufferSize>
 class NpStrBuffer: public NpStrBufferPtr
 {
+  template<int N, int M = N, char ...D>
+  struct BufferInitHelper : BufferInitHelper<N - 1, M, D..., ' '> {};
+  template<int M, char ...D>
+  struct BufferInitHelper<0, M, D...>
+  {
+    static constexpr ::std::array<char, M> table = { D... };
+  };
+
 public:
   constexpr
   NpStrBuffer()
-  : NpStrBufferPtr(buffer, BufferSize)
+  : NpStrBufferPtr(buffer.data(), BufferSize), buffer(BufferInitHelper<BufferSize>::table)
   {}
   NpStrBuffer(const char* s)
-  : NpStrBufferPtr(buffer, BufferSize)
+  : NpStrBufferPtr(buffer.data(), BufferSize)
   {
     *this = s;
   }
   NpStrBuffer(const NpStr& s)
-  : NpStrBufferPtr(buffer, BufferSize)
+  : NpStrBufferPtr(buffer.data(), BufferSize)
   {
     *this = s;
   }
   NpStrBuffer(NpStrBufferPtr&& other)
-  : NpStrBufferPtr(buffer, BufferSize)
+  : NpStrBufferPtr(buffer.data(), BufferSize)
   {
     auto l = other.len;
 
@@ -85,10 +94,10 @@ public:
     len = l;
 
     other.len = 0;
-    memset(other.str, 0, other.bufferSpace);
+    memset(other.str, ' ', other.bufferSpace);  // in NpStr Typen sind NUL Zeichen verboten, daher wird auch ein leerer Puffer mit Leerzeichen vorbelegt.
   }
   NpStrBuffer(const NpStrBuffer& s)
-  : NpStrBufferPtr(buffer, BufferSize)
+  : NpStrBufferPtr(buffer.data(), BufferSize)
   {
     *this = s;
   }
@@ -99,7 +108,7 @@ public:
   using NpStrBufferPtr::operator==;
   using NpStrBufferPtr::operator!=;
 protected:
-  char buffer[BufferSize];
+  ::std::array<char, BufferSize> buffer;
 };
 
 } /* namespace Npfs */

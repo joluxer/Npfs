@@ -49,9 +49,10 @@ BoolStringFile::ResultMessage BoolStringFile::open(Npfs::OpenIoState& workRef, u
 {
   ResultMessage result = 0;
   ResultMessage updateError = 0;
+  bool readMode = (Oread == mode) or (Ordwr == mode);
   assert(0 != mm);
 
-  if (!updateHandler || updateHandler->execute(variable, updateError))
+  if (!readMode || !updateHandler || updateHandler->execute(variable, updateError))
   {
     if (not updateError)
     {
@@ -236,6 +237,12 @@ BoolStringFile::ResultMessage BoolStringFile::close(Npfs::OpenIoState& workRef)
           workRef.ioState = ioRef = 0;
         }
       }
+    }
+    else
+    {
+      result = OpSuccess;
+      delete ioRef;
+      workRef.ioState = ioRef = 0;
     }
   }
   else

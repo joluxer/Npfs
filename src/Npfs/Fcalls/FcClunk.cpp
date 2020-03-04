@@ -82,8 +82,10 @@ PT_THREAD(FcClunk::runClunk())
 
   if (fid->dirEntry && fid->ioRef)
   {
-    OpenIoState s(fid->ioRef, op);
-    result = fid->dirEntry->close(s);
+    PT_WAIT_UNTIL(pt, {
+        OpenIoState s(fid->ioRef, op);
+        !!(result = fid->dirEntry->close(s));
+    });
   }
   else
   {
@@ -111,7 +113,7 @@ PT_THREAD(FcClunk::runClunk())
         if (fid->omode & Oexcl)
         {
           // file was locked
-          fid->dirEntry->unlock();
+          fid->dirEntry->unlockFrom(fid);
         }
         if (fid->omode & Orclose)
         {
@@ -122,6 +124,8 @@ PT_THREAD(FcClunk::runClunk())
           }
         }
       }
+      else  // file was not successful opened, but perhaps locked
+        fid->dirEntry->unlockFrom(fid);
 
       toRemoveResRef = fid->dirEntry.release();
     }

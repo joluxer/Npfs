@@ -100,6 +100,7 @@ PT_THREAD(FcVersion::connectionReset())
       {
         OpenIoState s(resetReq->fid->ioRef, resetReq->op);
         resetReq->fid->dirEntry->flush(s);
+        resetReq->fid->dirEntry->unlockFrom(resetReq->fid);
       }
 
       delete resetReq;
@@ -117,6 +118,7 @@ PT_THREAD(FcVersion::connectionReset())
       {
         closeState = 0;
         PT_WAIT_WHILE(pt, doClose());
+        orphan->dirEntry->unlockFrom(orphan);
       }
     }
     Fid::destroyPool(fidPool, mm);

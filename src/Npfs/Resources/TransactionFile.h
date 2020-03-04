@@ -112,11 +112,9 @@ protected:
     typename SerDes::VarConstructionType transientValue;
     unsigned char *ioBuffer;
     unsigned bufferFill;
-    struct _Flags
-    {
-      bool wasOpenedForWrite:1;
-      bool isWritten:1;
-    } flag;
+
+    bool wasOpenedForWrite:1;
+    bool isWritten:1;
   };
 
   struct CoRoState: public Npfs::BlockingOpState

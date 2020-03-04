@@ -110,8 +110,10 @@ public:
   uint64_t size() const;
 
   bool isLocked() const;
+  bool isLockedFor(void * lockId) const;
   bool lockFor(void * lockId);
-  void unlock();
+  void unlock();  // avoid use of this, use unlockFrom() instead
+  void unlockFrom(void * lockId);
 
   void incrAccessRef(); // used by Fid & Co, when holding references/pointers
   void decrAccessRef(); // used by Fid & Co, when holding references/pointers
@@ -181,6 +183,12 @@ bool Resource::isLocked() const
 }
 
 inline
+bool Resource::isLockedFor(void * lockId) const
+{
+  return (locked == lockId);
+}
+
+inline
 bool Resource::isMounted() const
 {
   return !!parent;
@@ -204,6 +212,13 @@ inline
 void Resource::unlock()
 {
   locked = 0;
+}
+
+inline
+void Resource::unlockFrom(void * lockId)
+{
+  if (isLockedFor(lockId))
+    locked = 0;
 }
 
 inline

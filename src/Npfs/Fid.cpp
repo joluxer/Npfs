@@ -13,13 +13,20 @@ namespace Npfs
 Fid::Fid()
 : fid(~0), refcount(0), omode(~0),
   user(0), directory(0), dirEntry(0), ioRef(0),
-  nsDetach(0)
+  nsDetach(0),
+  next(0), pool(0)
 {}
 
 Fid::~Fid()
 {
   int hash;
   Fid **htable, *f, **prevp;
+
+  if (directory)
+    directory->unlockFrom(this);  // normally the cleanup routines should have done this, so this is a last resort, which might fail
+
+  if (dirEntry)
+    dirEntry->unlockFrom(this);   // normally the cleanup routines should have done this, so this is a last resort, which might fail
 
   if (ioRef)  // normally the resource implementation shall cleanup these pointers, so this is a last resort, which might go wrong, as this is not nessessarily deletable
     delete ioRef;

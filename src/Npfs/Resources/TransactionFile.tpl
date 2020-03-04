@@ -55,7 +55,7 @@ PT_THREAD(TransactionFile<SerDes>::openCoRoutine(ResultMessage& result, Npfs::Op
   ResultMessage txnError = 0;
   auto oMode = mode & 0x03;
 
-  ioRef->flag.wasOpenedForWrite = ((oMode == Owrite) || (oMode == Ordwr));
+  ioRef->wasOpenedForWrite = ((oMode == Owrite) || (oMode == Ordwr));
 
   PT_BEGIN(pt);
 
@@ -74,7 +74,7 @@ PT_THREAD(TransactionFile<SerDes>::openCoRoutine(ResultMessage& result, Npfs::Op
     PT_EXIT(pt);
   }
 
-  ioRef->flag.isWritten = false;
+  ioRef->isWritten = false;
   if (((mode & 0x03) == Owrite) || (mode & Otrunc))
   {
     ioRef->bufferFill = 0;
@@ -188,7 +188,7 @@ Npfs::Resource::ResultMessage TransactionFile<SerDes>::write(Npfs::OpenIoState& 
 
   if (count)
   {
-    ioRef->flag.isWritten = true;
+    ioRef->isWritten = true;
     memcpy(ioRef->ioBuffer + offset, dataBuffer, count);
     if ((offset + count) > ioRef->bufferFill)
       ioRef->bufferFill = offset + count;
@@ -205,7 +205,7 @@ void TransactionFile<SerDes>::flush(Npfs::OpenIoState& workRef)
   {
     IoBuffer* ioRef = static_cast<IoBuffer*>(workRef.ioState);
     const char* dummyResult;
-    abortTxnHandler->execute(ioRef->transientValue, ioRef->flag.wasOpenedForWrite, dummyResult, abortTxnRef);
+    abortTxnHandler->execute(ioRef->transientValue, ioRef->wasOpenedForWrite, dummyResult, abortTxnRef);
   }
 
   if (workRef.ioState)
@@ -232,7 +232,7 @@ PT_THREAD(TransactionFile<SerDes>::closeCoRoutine(ResultMessage& result, Npfs::O
 
   PT_BEGIN(pt);
 
-  if (ioRef->flag.isWritten && (0 != ioRef->bufferFill))
+  if (ioRef->isWritten && (0 != ioRef->bufferFill))
   {
     if (not deserialize(ioRef))
     {
@@ -242,8 +242,8 @@ PT_THREAD(TransactionFile<SerDes>::closeCoRoutine(ResultMessage& result, Npfs::O
     }
   }
 
-  if (commitTxnHandler and ioRef->flag.wasOpenedForWrite)
-    PT_WAIT_UNTIL(pt, commitTxnHandler->execute(ioRef->transientValue, ioRef->flag.isWritten, txnError, commitTxnRef));
+  if (commitTxnHandler and ioRef->wasOpenedForWrite)
+    PT_WAIT_UNTIL(pt, commitTxnHandler->execute(ioRef->transientValue, ioRef->isWritten, txnError, commitTxnRef));
 
   if (txnError)
   {
@@ -253,7 +253,7 @@ PT_THREAD(TransactionFile<SerDes>::closeCoRoutine(ResultMessage& result, Npfs::O
 
   // continue closing
   if (endTxnHandler)
-    PT_WAIT_UNTIL(pt, endTxnHandler->notify(ioRef->transientValue, ioRef->flag.wasOpenedForWrite, txnError, endTxnRef));
+    PT_WAIT_UNTIL(pt, endTxnHandler->notify(ioRef->transientValue, ioRef->wasOpenedForWrite, txnError, endTxnRef));
 
   if (txnError)
   {
@@ -315,6 +315,7 @@ Npfs::Resource::ResultMessage TransactionFile<SerDes>::trunc(Npfs::BlockingOpSta
 
 template<class SerDes>
 TransactionFile<SerDes>::IoBuffer::IoBuffer()
+: bufferFill(0), wasOpenedForWrite(false), isWritten(false)
 {
   ioBuffer = reinterpret_cast<unsigned char*>(npfsNew(SerDes::DataLength_bytes + 1, mm));
 }

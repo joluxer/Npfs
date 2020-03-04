@@ -43,6 +43,7 @@ Rmessage* FcFlush::execute()
           {
             OpenIoState s(creq->fid->ioRef, creq->op);
             creq->fid->dirEntry->flush(s);
+            creq->fid->dirEntry->unlockFrom(creq->fid);
           }
           creq->fid->decRef();          // this FID is no longer pending
         }
